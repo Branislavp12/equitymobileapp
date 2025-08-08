@@ -1,0 +1,33 @@
+src/
+├── components/
+│   ├── EquityChart/
+│   │   ├── index.tsx              # Hlavný komponent grafu equity (kombinuje ostatné)
+│   │   ├── ChartAxes.tsx          # SVG X/Y osy a popisky
+│   │   ├── ChartBranches.tsx      # Interaktívne vetvenie (zisk/strata)
+│   │   ├── ChartHistoryLine.tsx   # SVG línia equity krivky
+│   ├── TradeForm.tsx              # Formulár pre zadanie risk/reward
+│
+├── hooks/
+│   ├── useChartScales.ts          # Hook na výpočet mierok pre SVG graf (zoom, pan)
+│   ├── useTradeHistory.ts         # Hook pre správu obchodov, equity krivky a štatistík
+│
+├── navigation/
+│   ├── RootNavigator.tsx          # Hlavný obal aplikácie (obsahuje Tab navigator)
+│   ├── BottomTabNavigator.tsx     # Hlavný spodný tab bar
+│   ├── TradingStackNavigator.tsx  # Stack pre sekciu Trading
+│   ├── TradesStackNavigator.tsx   # Stack pre sekciu Obchody
+│   ├── CalendarStackNavigator.tsx # Stack pre sekciu Kalendár
+│   ├── CalculatorStackNavigator.tsx # Stack pre sekciu Kalkulačka
+│
+├── screens/
+│   ├── WelcomeScreen.tsx          # Úvodná obrazovka: zadanie kapitálu
+│   ├── TradingScreen.tsx          # Hlavná obrazovka trading simulácie
+│   ├── TradesScreen.tsx           # (Placeholder) Zoznam obchodov
+│   ├── CalendarScreen.tsx         # (Placeholder) Obchodný kalendár
+│   ├── CalculatorScreen.tsx       # (Placeholder) Kalkulačka
+│
+├── storage/
+│   ├── persist.ts                 # Práca s lokálnym storage (kapitál, obchody)
+│
+├── utils/
+│   ├── chartScales.ts             # Pomocné funkcie pre výpočet mierok (volané z hooku)

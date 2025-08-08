@@ -1,0 +1,68 @@
+Importy: z čoho súbor importuje a načo to používa
+
+Exporty: čo konkrétne poskytuje iným súborom (napr. funkcie, komponenty, hooky)
+
+Poznámka: čo sa v tom súbore udeje (hlavná zodpovednosť)
+
+
+
+
+- file: AppNavigator.js
+  imports: [WelcomeScreen.js, TradingScreen.js]
+  exports: [AppNavigator component]
+  purpose: "Definuje navigáciu medzi obrazovkami Welcome a Trading."
+
+- file: WelcomeScreen.js
+  imports: [persist.js]
+  exports: [WelcomeScreen component]
+  purpose: "Zobrazuje vstup pre počiatočný kapitál. Ukladá ho do AsyncStorage. Redirectuje do Trading."
+
+- file: TradingScreen.js
+  imports: [useTradeHistory.js, persist.js, TradeForm.js, EquityChart/index.js]
+  exports: [TradingScreen component]
+  purpose: "Hlavná obrazovka: zobrazuje graf, spravuje obchody, formulár, štatistiky a akcie (reset, undo)."
+
+- file: useTradeHistory.js
+  imports: [persist.js]
+  exports: [useTradeHistory hook]
+  purpose: "Centralizovaná logika obchodov: kapitál, obchody, výpočet equity, štatistiky, undo/reset."
+
+- file: TradeForm.js
+  imports: [@ui-kitten/components]
+  exports: [TradeForm component]
+  purpose: "Formulár na zadanie risk/reward, validácia vstupu, výstraha pri veľkom riske."
+
+- file: EquityChart/index.js
+  imports: [useChartScales.js, ChartAxes.js, ChartHistoryLine.js, ChartBranches.js]
+  exports: [EquityChart component]
+  purpose: "Zobrazuje equity graf, vetvy a zoom/pan. Volá useChartScales."
+
+- file: useChartScales.js
+  imports: [chartScales.js]
+  exports: [useChartScales hook]
+  purpose: "Vypočíta X/Y škály, okno grafu, ticky. Používa chartScales."
+
+- file: ChartAxes.js
+  imports: []
+  exports: [ChartAxes component]
+  purpose: "Kreslí X/Y osi, popisky a ticky v SVG formáte."
+
+- file: ChartHistoryLine.js
+  imports: [d3-shape]
+  exports: [ChartHistoryLine component]
+  purpose: "Zobrazuje prerušovanú čiaru equity podľa dát. Delí históriu na segmenty."
+
+- file: ChartBranches.js
+  imports: []
+  exports: [ChartBranches component]
+  purpose: "Interaktívne vetvy (profit/loss) z posledného bodu. Posiela spätný výber do parenta."
+
+- file: persist.js
+  imports: [AsyncStorage]
+  exports: [getCapital, setCapital, removeCapital, getTrades, setTrades, removeTrades]
+  purpose: "Trvalé uloženie kapitálu a obchodov do AsyncStorage."
+
+- file: chartScales.js
+  imports: []
+  exports: [computeWindowIndices, getWindowedHistory, computeXDomain, computeYDomain, computeYTicks, padWindowedHistory]
+  purpose: "Čisto funkčný výpočtový modul pre rozsah grafu, osy a dynamické prispôsobenie."

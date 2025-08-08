@@ -1,0 +1,107 @@
+- file: AppNavigator.tsx
+  type: navigation
+  featureScope: root
+  imports: [WelcomeScreen.tsx, TradingScreen.tsx]
+  usedIn: [App.tsx / entry point]
+  exports: [AppNavigator]
+  reusability: medium
+  purpose: "Definuje stack navigáciu medzi WelcomeScreen a TradingScreen. Typuje všetky screen parametre."
+
+- file: WelcomeScreen.tsx
+  type: screen
+  featureScope: onboarding
+  imports: [persist.ts]
+  usedIn: [AppNavigator.tsx]
+  exports: [WelcomeScreen]
+  reusability: low
+  purpose: "Vstup pre počiatočný kapitál, validuje a ukladá ho do AsyncStorage. Redirect na TradingScreen. Typované navigation props."
+
+- file: TradingScreen.tsx
+  type: screen
+  featureScope: trading
+  imports: [useTradeHistory.ts, persist.ts, TradeForm.tsx, EquityChart/index.tsx]
+  usedIn: [AppNavigator.tsx]
+  exports: [TradingScreen]
+  reusability: low
+  purpose: "Hlavná obrazovka aplikácie: orchestruje workflow – graf equity, obchodný formulár, štatistiky, undo/reset. Typované všetky props."
+
+- file: useTradeHistory.ts
+  type: hook
+  featureScope: trading
+  imports: [persist.ts]
+  usedIn: [TradingScreen.tsx]
+  exports: [useTradeHistory, Trade, TradeParams]
+  reusability: high
+  purpose: "Centralizovaná logika obchodovania: správa kapitálu, obchodov, výpočet equity, winrate, undo/reset. Plná type-safety."
+
+- file: persist.ts
+  type: storage
+  featureScope: shared
+  imports: [AsyncStorage]
+  usedIn: [WelcomeScreen.tsx, TradingScreen.tsx, useTradeHistory.ts]
+  exports: [getCapital, setCapital, removeCapital, getTrades, setTrades, removeTrades, Trade type]
+  reusability: high
+  purpose: "Typ-safe API pre trvalé uloženie kapitálu a obchodov do AsyncStorage. Všetky výstupy majú garantovaný typ."
+
+- file: TradeForm.tsx
+  type: component
+  featureScope: trading
+  imports: [@ui-kitten/components]
+  usedIn: [TradingScreen.tsx]
+  exports: [TradeForm]
+  reusability: high
+  purpose: "Formulár na zadanie risk/reward, validácia vstupov, výstraha pri veľkom riske. Typované onSubmit/props."
+
+- file: EquityChart/index.tsx
+  type: component
+  featureScope: equity-chart
+  imports: [useChartScales.ts, ChartAxes.tsx, ChartHistoryLine.tsx, ChartBranches.tsx]
+  usedIn: [TradingScreen.tsx]
+  exports: [EquityChart]
+  reusability: medium
+  purpose: "Kombinuje X/Y škály, historickú čiaru, vetvy profit/loss, ovládanie zoom/pan. Všetky props a subkomponenty sú typované."
+
+- file: useChartScales.ts
+  type: hook
+  featureScope: equity-chart
+  imports: [chartScales.ts]
+  usedIn: [EquityChart/index.tsx]
+  exports: [useChartScales]
+  reusability: high
+  purpose: "Výpočty škál, okien grafu, tickov, baseline, padding. Typované výstupy pre vizualizačné komponenty."
+
+- file: chartScales.ts
+  type: utility
+  featureScope: equity-chart
+  imports: []
+  usedIn: [useChartScales.ts]
+  exports: [computeWindowIndices, getWindowedHistory, computeXDomain, computeYDomain, computeYTicks, padWindowedHistory]
+  reusability: high
+  purpose: "Čisto funkčný utility modul pre graf: domény, okná, baseline, tickovanie. Typ-safe, čisté výstupy."
+
+- file: ChartAxes.tsx
+  type: component
+  featureScope: equity-chart
+  imports: [react-native-svg]
+  usedIn: [EquityChart/index.tsx]
+  exports: [ChartAxes]
+  reusability: medium
+  purpose: "Renderuje X a Y os s tickmi, popiskami a pixelovým fontom. Všetky props majú typy."
+
+- file: ChartHistoryLine.tsx
+  type: component
+  featureScope: equity-chart
+  imports: [d3-shape]
+  usedIn: [EquityChart/index.tsx]
+  exports: [ChartHistoryLine]
+  reusability: medium
+  purpose: "Vykresľuje equity čiaru podľa dát, rozdeľuje segmenty podľa null slotov. Typované vstupy."
+
+- file: ChartBranches.tsx
+  type: component
+  featureScope: equity-chart
+  imports: [react-native-svg]
+  usedIn: [EquityChart/index.tsx]
+  exports: [ChartBranches]
+  reusability: medium
+  purpose: "Interaktívne SVG vetvy profit/loss na poslednom bode grafu. Props aj callbacky sú typované."

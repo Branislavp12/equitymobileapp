@@ -1,0 +1,199 @@
+🧠 AI-KONTEXT: Interaktívna trading aplikácia (simulátor)
+
+📌 Názov projektu:
+Interactive Equity – vizuálny simulátor obchodného rozhodovania a denníka
+
+🎯 Hlavné ciele aplikácie:
+- Vizualizovať equity krivku účtu a dopad risk/reward rozhodnutí.
+- Umožniť plánovanie a dosahovanie obchodných cieľov cez kalendár.
+- Viesť si obchodný denník a analyzovať štatistiky.
+
+⚙️ Funkcionality:
+
+**Základný trading workflow:**
+- Zadanie počiatočného kapitálu (WelcomeScreen)
+- Simulácia obchodov: zadanie risku a rewardu pred obchodom (TradeForm)
+- Interaktívny výber výsledku obchodu (profit/loss) priamo v grafe (ChartBranches)
+- Dynamické kreslenie equity krivky (EquityChart: ChartAxes, ChartHistoryLine)
+- Undo, reset účtu, štatistiky (winrate, počet obchodov, ziskové/stratové, equity)
+
+**Kalendár obchodných cieľov (CalendarScreen):**
+- Nastavenie cieľa (modal s cieľovou sumou a dátumom)
+- Compound výpočet denného cieľa na základe aktuálnej equity
+- 5x7 grid kalendára s preklikávaním medzi mesiacmi (CalendarGrid)
+- Každý deň v grid-e bude môcť zobrazovať stav, poznámku, sumu (pripravuje sa)
+- Pripravený zápis poznámok, ziskov/strát a stavu dňa (persist)
+
+**Navigácia:**
+- Moderná bottom-tab navigácia so stackami pre každú sekciu:
+  - Trading (hlavný simulátor)
+  - Obchody (Trade history)
+  - Kalendár
+  - Kalkulačka
+- Každý tab má vlastný stack navigator – ľahké rozšírenie na ďalšie obrazovky
+
+**Lokálne uloženie dát:**
+- AsyncStorage cez modul persist.ts
+- Ukladanie kapitálu, obchodov, cieľov aj zápisov do kalendára
+- Pripravené CRUD API pre denné zápisy v kalendári (persist: get/set/removeCalendarDayEntry)
+
+**Použité technológie:**
+- React Native + TypeScript
+- D3 pre SVG graf (dynamická krivka)
+- Navigácia cez @react-navigation
+
+---
+
+🧭 Aktuálna štruktúra projektu (src/)
+
+src/
+├── components/
+│   ├── EquityChart/
+│   │   ├── index.tsx            # Hlavný komponent grafu equity, kombinuje vetvy, osy a krivku, spravuje zoom/pan
+│   │   ├── ChartAxes.tsx        # SVG X/Y osy a popisky pre graf – refaktorované na tokens a typy
+│   │   ├── ChartBranches.tsx    # Interaktívne vetvy zisk/strata – čistý prezentačný komponent
+│   │   ├── ChartHistoryLine.tsx # SVG línia zobrazujúca historickú equity krivku – čistý render segmentov
+│   │   ├── useBranchGeometry.ts # Hook na výpočet pozícií vetiev zisk/strata podľa risk/reward
+│   ├── TradeForm.tsx            # Formulár na zadanie risk/reward pred obchodom – so základnou validáciou
+│   ├── GoalModal.tsx            # Modal na zadanie cieľa – cieľová suma a dátum
+│   ├── CalendarGrid.tsx         # 5x7 grid kalendára, prepínanie mesiacov, zobrazenie cieľov
+│
+├── hooks/
+│   ├── useCalendarGoal.ts       # Hook na správu cieľov v kalendári (uloženie, výpočet denného targetu)
+│   ├── useChartScales.ts        # Výpočet mierky a dimenzií pre SVG graf
+│   ├── useTradeHistory.ts       # Logika práce s obchodmi (load/save/undo)
+│
+├── navigation/
+│   ├── BottomTabNavigator.tsx        # Navigácia medzi hlavnými sekciami (Trading, Kalendár, atď.)
+│   ├── CalendarStackNavigator.tsx    # Stack pre kalendár a jeho podstránky
+│   ├── CalculatorStackNavigator.tsx  # Stack pre výpočtovú časť (budúce rozšírenie)
+│   ├── RootNavigator.tsx             # Root navigačný wrapper s NavigationContainer
+│   ├── TradesStackNavigator.tsx      # Stack navigácia pre sekciu Obchody
+│   ├── TradingStackNavigator.tsx     # Stack navigácia pre simuláciu obchodovania
+│
+├── screens/
+│   ├── CalculatorScreen.tsx     # Obrazovka pre kalkulačku (WIP)
+│   ├── CalendarScreen.tsx       # Obrazovka kalendára s cieľmi a gridom
+│   ├── TradesScreen.tsx         # Zoznam vykonaných obchodov
+│   ├── TradingScreen.tsx        # Hlavná obrazovka pre simulovanie obchodného rozhodovania
+│   ├── WelcomeScreen.tsx        # Úvodný vstup – zadanie počiatočného kapitálu
+│
+├── storage/
+│   └── persist.ts               # Ukladanie a načítanie dát z AsyncStorage (cieľ, obchody, kapitál)
+│
+├── theme/
+│   └── tokens.ts                # Design systém: spacing, radius, fonty, farby, veľkosti
+│
+├── ui/
+│   ├── DateField.tsx           # UI komponent pre výber dátumu
+│   ├── ErrorText.tsx           # Zobrazenie chýb vo formulároch
+│   ├── GhostButton.tsx         # Sekundárne priehľadné tlačidlo s efektom po kliknutí
+│   ├── GoalPlaceholderCard.tsx # Karta zobrazovaná keď cieľ nie je nastavený
+│   ├── GoalSummaryCard.tsx     # Karta s prehľadom cieľa (suma, dátum, denné tempo)
+│   ├── HeaderText.tsx          # UI komponent pre sekčné nadpisy
+│   ├── InputField.tsx          # Input pole so spodným underlinom, použité v modáloch
+│   ├── ModalContainer.tsx      # Obal modálnych okien s jednotným štýlom
+│   ├── PrimaryButton.tsx       # Modré tlačidlo pre hlavné akcie
+│   ├── ProgressBar.tsx         # Vizualizácia progresu voči cieľu
+│   └── SectionCard.tsx         # Sekčné obalenie pre bloky v appke (padding + pozadie)
+│
+└── utils/
+    ├── calendarMath.ts         # Výpočty cieľových dátumov, validácia, denný nárast
+    └── chartScales.ts          # Pomocné funkcie pre výpočty SVG mierok grafu
+
+---
+
+💡 Poznámky pre jazykový model:
+- Výsledok každého obchodu vyberá používateľ manuálne – simulácia je „psychologická pomôcka“, nie náhodná hra.
+- Kalendár umožňuje vizuálnu disciplínu a plánovanie (dlhodobý rast, denný cieľ, poznámky).
+- Projekt rastie smerom ku komplexnej obchodnej platforme na tréning psychológie, disciplíny a štatistiky.
+- Pripravené CRUD API pre denné zápisy v kalendári a expanzívny grid umožňujú ďalšie rozšírenia (denník, sumarizácia...).
+- Kód je písaný production-ready spôsobom, rešpektuje typovanie, škálovanie a modularitu.
+
+
+=== APLIKAČNÁ ŠTRUKTÚRA: Interactive Equity Tracker ===
+------------------------------------------------------------
+## 📁 components/
+Zložka pre vizuálne komponenty naprieč appkou.
+
+- CalendarGrid.tsx – zobrazuje 5x7 kalendár, zvýrazňuje dni a cieľové hodnoty
+- GoalModal.tsx – modálne okno na zadanie cieľa (suma + dátum)
+- TradeForm.tsx – formulár na zadanie risku a rewardu pre nový obchod
+- EquityChart/ – podkomponenty pre zobrazenie equity grafu:
+  - ChartAxes.tsx – osy grafu
+  - ChartBranches.tsx – vetvenie obchodu (zisk/strata)
+  - ChartHistoryLine.tsx – historická krivka
+  - index.tsx – hlavný wrapper pre graf a interaktivitu
+  - useBranchGeometry.ts – výpočet súradníc vetiev podľa risk/reward
+
+---
+
+## 📁 hooks/
+Hooky abstrahujúce logiku a prístup k dátam.
+
+- useCalendarGoal.ts – správa obchodných cieľov + výpočty
+- useChartScales.ts – výpočet mierky pre graf
+- useTradeHistory.ts – práca s obchodnou históriou (load/save/reset)
+
+---
+
+## 📁 navigation/
+Navigačná štruktúra appky (bottom-tabs a stacky).
+
+- BottomTabNavigator.tsx – prepínač medzi hlavnými sekciami
+- CalendarStackNavigator.tsx – stack navigácia pre kalendár
+- CalculatorStackNavigator.tsx – stack pre kalkulačku
+- RootNavigator.tsx – root navigácia pre celú appku
+- TradesStackNavigator.tsx – stack pre obchodné obrazovky
+- TradingStackNavigator.tsx – stack pre trading simuláciu
+
+---
+
+## 📁 screens/
+Obrazovky reprezentujúce jednotlivé sekcie UI.
+
+- CalendarScreen.tsx – kalendár s cieľmi a gridom
+- CalculatorScreen.tsx – výpočtová obrazovka (WIP)
+- TradingScreen.tsx – hlavná obrazovka so simulátorom
+- TradesScreen.tsx – prehľad zadaných obchodov
+- WelcomeScreen.tsx – úvodný vstup kapitálu
+
+---
+
+## 📁 storage/
+Zodpovedné za ukladanie dát do AsyncStorage.
+
+- persist.ts – wrapper funkcie na save/load/reset
+
+---
+
+## 📁 theme/
+Globálne vizuálne nastavenia UI.
+
+- tokens.ts – spacing, fonty, radius, farby ako „design systém“
+
+---
+
+## 📁 ui/
+Znovupoužiteľné UI komponenty (building blocks).
+
+- SectionCard.tsx – karty s paddingom a pozadím
+- GhostButton.tsx – priehľadné tlačidlo s efektom
+- PrimaryButton.tsx – modré tlačidlo pre hlavné akcie
+- InputField.tsx – vlastný input so spodným underline
+- DateField.tsx – dátumový vstup (nadstavba nad DatePicker)
+- ErrorText.tsx – konzistentný výpis chyby
+- HeaderText.tsx – text pre sekčné nadpisy
+- ProgressBar.tsx – vizuálny indikátor pokroku cieľa
+- ModalContainer.tsx – štandardizovaný obal modálnych okien
+- GoalSummaryCard.tsx – zobrazenie cieľa (suma, dátum, progress)
+- GoalPlaceholderCard.tsx – stav „bez cieľa“ s výzvou na zadanie
+
+---
+
+## 📁 utils/
+Pomocné výpočty a funkcie.
+
+- calendarMath.ts – výpočty cieľových dátumov, denné tempo, validácia
+- chartScales.ts – výpočet mierky pre vykreslenie grafu
+
