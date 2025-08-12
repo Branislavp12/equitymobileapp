@@ -1,6 +1,6 @@
 // src/components/EquityChart/index.tsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Svg from 'react-native-svg';
 import useChartScales from '../../hooks/useChartScales';
@@ -33,9 +33,22 @@ const EquityChart: React.FC<EquityChartProps> = ({
 }) => {
   if (!Array.isArray(history) || history.length === 0) return null;
 
-  const [nVisible, setNVisible] = useState<number>(11);
   const [yZoom, setYZoom] = useState<number>(10);
-  const [panOffset, setPanOffset] = useState<number>(0);
+
+  interface State {
+    nVisible: number;
+    panOffset: number;
+  }
+
+  const reducer = (state: State, payload: Partial<State>): State => ({
+    ...state,
+    ...payload,
+  });
+
+  const [{ nVisible, panOffset }, dispatch] = useReducer(reducer, {
+    nVisible: 11,
+    panOffset: 0,
+  });
 
   const maxPan = Math.max(0, history.length - nVisible);
   const startIndex = Math.max(0, panOffset);
@@ -43,8 +56,10 @@ const EquityChart: React.FC<EquityChartProps> = ({
 
   useEffect(() => {
     const maxPanNow = Math.max(0, history.length - nVisible);
-    if (panOffset > maxPanNow) setPanOffset(maxPanNow);
-  }, [nVisible, history.length]);
+    if (panOffset > maxPanNow) {
+      dispatch({ panOffset: maxPanNow });
+    }
+  }, [nVisible, history.length, panOffset]);
 
   const {
     yScale,
@@ -96,8 +111,7 @@ const EquityChart: React.FC<EquityChartProps> = ({
         newVisible
       );
     }
-    setNVisible(newVisible);
-    setPanOffset(newStart);
+    dispatch({ nVisible: newVisible, panOffset: newStart });
   };
 
   const zoomOut = () => {
@@ -115,16 +129,15 @@ const EquityChart: React.FC<EquityChartProps> = ({
         newVisible
       );
     }
-    setNVisible(newVisible);
-    setPanOffset(newStart);
+    dispatch({ nVisible: newVisible, panOffset: newStart });
   };
   const yZoomIn = () => setYZoom(prev => Math.min(prev * 2, 16));
   const yZoomOut = () => setYZoom(prev => Math.max(prev / 2, 0.1));
   const panStep = Math.max(1, Math.floor(nVisible * 0.1));
-  const panLeft = () => setPanOffset(prev => Math.min(prev + panStep));
-  const panRight = () => setPanOffset(prev => Math.max(prev - panStep, 0));
-  const goToStart = () => setPanOffset(0);
-  const goToEnd = () => setPanOffset(maxPan);
+  const panLeft = () => dispatch({ panOffset: panOffset + panStep });
+  const panRight = () => dispatch({ panOffset: Math.max(panOffset - panStep, 0) });
+  const goToStart = () => dispatch({ panOffset: 0 });
+  const goToEnd = () => dispatch({ panOffset: maxPan });
 
   // AUTOSCROLL LOGIKA
   const autoScrollIfNeeded = () => {
@@ -150,7 +163,7 @@ const EquityChart: React.FC<EquityChartProps> = ({
     }
 
     if (shouldScroll) {
-      setPanOffset(idealOffset);
+      dispatch({ panOffset: idealOffset });
     }
   };
 
