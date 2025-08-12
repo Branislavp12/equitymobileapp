@@ -83,23 +83,27 @@ export default function useChartScales({
   
   
 
-  /**
-   * Aktuálne vykresľovaný úsek histórie (len nVisible bodov v okne, podľa panovania).
-   * Práve tieto hodnoty sa vizualizujú – slúži na výpočet minY, maxY, kreslenie krivky aj vetiev.
-   */
-console.log('----------------------------');
-    console.log('[useChartScales] INPUT: history.length =', history.length);
-    console.log('[useChartScales] INPUT: panOffset =', panOffset);
-    console.log('[useChartScales] INPUT: nVisible =', nVisible);
-    console.log('[useChartScales] INPUT: yZoom =', yZoom);
-    console.log('[useChartScales] INPUT: initialCapital =', initialCapital);
+/**
+ * Aktuálne vykresľovaný úsek histórie (len nVisible bodov v okne, podľa panovania).
+ * Práve tieto hodnoty sa vizualizujú – slúži na výpočet minY, maxY, kreslenie krivky aj vetiev.
+ */
+if (__DEV__) {
+  console.log('----------------------------');
+  console.log('[useChartScales] INPUT: history.length =', history.length);
+  console.log('[useChartScales] INPUT: panOffset =', panOffset);
+  console.log('[useChartScales] INPUT: nVisible =', nVisible);
+  console.log('[useChartScales] INPUT: yZoom =', yZoom);
+  console.log('[useChartScales] INPUT: initialCapital =', initialCapital);
+}
 
-  const windowedHistory = useMemo(
+const windowedHistory = useMemo(
     () => history.slice(startIndex, startIndex + nVisible),
     [history, startIndex, nVisible]
   );
-console.log('[useChartScales] CALC: windowedHistory.length =', windowedHistory.length);
-    console.log('[useChartScales] CALC: windowedHistory =', windowedHistory);
+if (__DEV__) {
+  console.log('[useChartScales] CALC: windowedHistory.length =', windowedHistory.length);
+  console.log('[useChartScales] CALC: windowedHistory =', windowedHistory);
+}
   /**
    * Najnižšia hodnota v aktuálnom okne (spodný okraj Y osy).
    * Vždy zahŕňa aj initialCapital – aby Y os nikdy "nepreskočila" nulu alebo počiatočný stav.
@@ -161,11 +165,13 @@ const yticks = useMemo(() => {
 
 
    
-    console.log('[useChartScales] SCALE: yScale.domain =', yScale.domain());
-    console.log('[useChartScales] SCALE: xScale.domain =', xScale.domain());
-    console.log('[useChartScales] SCALE: xScale.range =', xScale.range());
-    console.log('[useChartScales] SCALE: yScale.range =', yScale.range());
-    console.log('----------------------------');
+if (__DEV__) {
+  console.log('[useChartScales] SCALE: yScale.domain =', yScale.domain());
+  console.log('[useChartScales] SCALE: xScale.domain =', xScale.domain());
+  console.log('[useChartScales] SCALE: xScale.range =', xScale.range());
+  console.log('[useChartScales] SCALE: yScale.range =', yScale.range());
+  console.log('----------------------------');
+}
 
   // ========== Výstup hooku – všetky potrebné výpočty na kreslenie grafu ==========
   return {

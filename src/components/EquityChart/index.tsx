@@ -72,29 +72,53 @@ const EquityChart: React.FC<EquityChartProps> = ({
   const lastIndex = startIndex + (windowedHistory.length - 1 - lastWindowIndex);
 
   // === INIT DEBUG LOGS ===
-  console.log('[INIT] history.length =', history.length);
-console.log('[INIT] nVisible =', nVisible);
-console.log('[INIT] maxPan =', maxPan);
-console.log('[INIT] panOffset =', panOffset);
-console.log('[INIT] startIndex =', startIndex);
-console.log('[INIT] windowedHistory =', windowedHistory);
+  if (__DEV__) {
+    console.log('[INIT] history.length =', history.length);
+    console.log('[INIT] nVisible =', nVisible);
+    console.log('[INIT] maxPan =', maxPan);
+    console.log('[INIT] panOffset =', panOffset);
+    console.log('[INIT] startIndex =', startIndex);
+    console.log('[INIT] windowedHistory =', windowedHistory);
+  }
 
 
   const zoomIn = () => {
-  const newVisible = Math.max(MIN_VISIBLE, nVisible - 1);
-  const newStart = Math.min(startIndex + 1, history.length - newVisible);
-  console.log('[ZOOM-X] Zooming IN → startIndex:', startIndex, '→', newStart, '| nVisible:', nVisible, '→', newVisible);
-  setNVisible(newVisible);
-  setPanOffset(newStart);
-};
+    const newVisible = Math.max(MIN_VISIBLE, nVisible - 1);
+    const newStart = Math.min(startIndex + 1, history.length - newVisible);
+    if (__DEV__) {
+      console.log(
+        '[ZOOM-X] Zooming IN → startIndex:',
+        startIndex,
+        '→',
+        newStart,
+        '| nVisible:',
+        nVisible,
+        '→',
+        newVisible
+      );
+    }
+    setNVisible(newVisible);
+    setPanOffset(newStart);
+  };
 
-const zoomOut = () => {
-  const newVisible = Math.min(MAX_VISIBLE, nVisible + 1);
-  const newStart = Math.max(0, startIndex - 1);
-  console.log('[ZOOM-X] Zooming OUT → startIndex:', startIndex, '→', newStart, '| nVisible:', nVisible, '→', newVisible);
-  setNVisible(newVisible);
-  setPanOffset(newStart);
-};
+  const zoomOut = () => {
+    const newVisible = Math.min(MAX_VISIBLE, nVisible + 1);
+    const newStart = Math.max(0, startIndex - 1);
+    if (__DEV__) {
+      console.log(
+        '[ZOOM-X] Zooming OUT → startIndex:',
+        startIndex,
+        '→',
+        newStart,
+        '| nVisible:',
+        nVisible,
+        '→',
+        newVisible
+      );
+    }
+    setNVisible(newVisible);
+    setPanOffset(newStart);
+  };
   const yZoomIn = () => setYZoom(prev => Math.min(prev * 2, 16));
   const yZoomOut = () => setYZoom(prev => Math.max(prev / 2, 0.1));
   const panStep = Math.max(1, Math.floor(nVisible * 0.1));
@@ -110,10 +134,21 @@ const zoomOut = () => {
     const shouldScroll = latestIndex >= threshold;
     const idealOffset = Math.max(0, latestIndex - Math.floor(nVisible * 0.7));
 
-    console.log('[AUTOSCROLL] lastIndex =', history.length - 1);
-console.log('[AUTOSCROLL] scrollThreshold =', startIndex + Math.floor(nVisible * 0.7));
-console.log('[AUTOSCROLL] Should scroll?', history.length - 1 >= startIndex + Math.floor(nVisible * 0.7));
-console.log('[AUTOSCROLL] Setting panOffset to:', Math.max(0, history.length - 1 - Math.floor(nVisible * 0.7)));
+    if (__DEV__) {
+      console.log('[AUTOSCROLL] lastIndex =', history.length - 1);
+      console.log(
+        '[AUTOSCROLL] scrollThreshold =',
+        startIndex + Math.floor(nVisible * 0.7)
+      );
+      console.log(
+        '[AUTOSCROLL] Should scroll?',
+        history.length - 1 >= startIndex + Math.floor(nVisible * 0.7)
+      );
+      console.log(
+        '[AUTOSCROLL] Setting panOffset to:',
+        Math.max(0, history.length - 1 - Math.floor(nVisible * 0.7))
+      );
+    }
 
     if (shouldScroll) {
       setPanOffset(idealOffset);
@@ -126,7 +161,9 @@ console.log('[AUTOSCROLL] Setting panOffset to:', Math.max(0, history.length - 1
 
   const handleBranchPress = (type: 'profit' | 'loss') => {
     if (risk != null && reward != null && onBranchPress) {
-      console.log('[EVENT] Branch pressed:', type);
+      if (__DEV__) {
+        console.log('[EVENT] Branch pressed:', type);
+      }
       onBranchPress(type);
       // autoscroll sa vykoná cez useEffect
     }
