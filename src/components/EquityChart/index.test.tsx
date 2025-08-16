@@ -91,6 +91,50 @@ describe('EquityChart component', () => {
     expect(getBtn('right').props.disabled).toBe(true);
   });
 
+  it('handles x-zoom controls and disables buttons at bounds', () => {
+    const history = Array.from({ length: 40 }, (_, i) => 100 + i);
+    let component: renderer.ReactTestRenderer;
+
+    act(() => {
+      component = renderer.create(
+        <EquityChart history={history} initialCapital={1000} />
+      );
+    });
+
+    const getAxes = () => component.root.findByType(ChartAxes);
+    const getBtn = (text: string) => component.root.findByProps({ text });
+
+    // Component autoscrolls to the end by default – reset to start
+    act(() => {
+      getBtn('\u21e4').props.onPress(); // ⇤
+    });
+
+    // Zoom in reduces nVisible and shifts startIndex
+    act(() => {
+      getBtn('in').props.onPress();
+    });
+    expect(getAxes().props.nVisible).toBe(10); // MIN_VISIBLE
+    expect(getAxes().props.startIndex).toBe(1);
+    expect(getBtn('in').props.disabled).toBe(true);
+
+    // Zoom out restores initial state
+    act(() => {
+      getBtn('out').props.onPress();
+    });
+    expect(getAxes().props.nVisible).toBe(11);
+    expect(getAxes().props.startIndex).toBe(0);
+
+    // Zoom out until button disables at MAX_VISIBLE
+    while (!getBtn('out').props.disabled) {
+      act(() => {
+        getBtn('out').props.onPress();
+      });
+    }
+    expect(getAxes().props.nVisible).toBe(20); // MAX_VISIBLE
+    expect(getAxes().props.startIndex).toBe(0);
+    expect(getBtn('out').props.disabled).toBe(true);
+  });
+
   it('auto-scrolls to latest point only when new data exceeds visible window', async () => {
     let history = Array.from({ length: 10 }, (_, i) => 100 + i);
     let component: renderer.ReactTestRenderer;
