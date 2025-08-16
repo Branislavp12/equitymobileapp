@@ -91,6 +91,40 @@ describe('EquityChart component', () => {
     expect(getBtn('right').props.disabled).toBe(true);
   });
 
+  it('auto-scrolls to latest point only when new data exceeds visible window', async () => {
+    let history = Array.from({ length: 10 }, (_, i) => 100 + i);
+    let component: renderer.ReactTestRenderer;
+
+    await act(async () => {
+      component = renderer.create(
+        <EquityChart history={history} initialCapital={1000} />
+      );
+    });
+
+    const getAxes = () => component.root.findByType(ChartAxes);
+    const getStartIndex = () => getAxes().props.startIndex;
+    const initialStart = getStartIndex();
+
+    // Still within the visible window – should not scroll
+    await act(async () => {
+      history = [...history, 110]; // length 11
+      component.update(
+        <EquityChart history={history} initialCapital={1000} />
+      );
+    });
+    expect(getStartIndex()).toBe(initialStart);
+
+    // Exceed visible window – should autoscroll to keep latest point in view
+    await act(async () => {
+      history = [...history, 111, 112, 113, 114]; // length 15
+      component.update(
+        <EquityChart history={history} initialCapital={1000} />
+      );
+    });
+    expect(getStartIndex()).toBe(history.length - getAxes().props.nVisible);
+    expect(getStartIndex()).toBeGreaterThan(initialStart);
+  });
+
   it('handles y-zoom controls and disables buttons at bounds', () => {
     const history = Array.from({ length: 20 }, (_, i) => 100 + i);
     const initialCapital = 1000;
