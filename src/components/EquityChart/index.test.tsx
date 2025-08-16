@@ -35,5 +35,60 @@ describe('EquityChart component', () => {
     expect(component.root.findByType(ChartAxes)).toBeTruthy();
     expect(component.root.findByType(ChartHistoryLine)).toBeTruthy();
   });
+
+  it('handles panning controls and disables buttons at bounds', () => {
+    const history = Array.from({ length: 20 }, (_, i) => 100 + i);
+    let component: renderer.ReactTestRenderer;
+
+    act(() => {
+      component = renderer.create(
+        <EquityChart history={history} initialCapital={1000} />
+      );
+    });
+
+    const getAxes = () => component.root.findByType(ChartAxes);
+    const getStartIndex = () => getAxes().props.startIndex;
+    const getBtn = (text: string) => component.root.findByProps({ text });
+
+    const maxPan = history.length - getAxes().props.nVisible;
+
+    // Component autoscrolls to the end by default – reset to start
+    act(() => {
+      getBtn('\u21e4').props.onPress();
+    });
+
+    // Initial state at start of history
+    expect(getStartIndex()).toBe(0);
+    expect(getBtn('\u21e4').props.disabled).toBe(true); // ⇤
+    expect(getBtn('right').props.disabled).toBe(true);
+
+    // Pan left increases offset
+    act(() => {
+      getBtn('left').props.onPress();
+    });
+    expect(getStartIndex()).toBe(1);
+    expect(getBtn('right').props.disabled).toBe(false);
+
+    // Pan right decreases offset
+    act(() => {
+      getBtn('right').props.onPress();
+    });
+    expect(getStartIndex()).toBe(0);
+
+    // Jump to end and verify max pan
+    act(() => {
+      getBtn('\u21e5').props.onPress(); // ⇥
+    });
+    expect(getStartIndex()).toBe(maxPan);
+    expect(getBtn('\u21e5').props.disabled).toBe(true);
+
+    // Jump back to start
+    act(() => {
+      getBtn('\u21e4').props.onPress();
+    });
+    expect(getStartIndex()).toBe(0);
+    expect(getBtn('\u21e4').props.disabled).toBe(true);
+    expect(getBtn('right').props.disabled).toBe(true);
+  });
 });
 
