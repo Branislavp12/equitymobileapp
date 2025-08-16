@@ -1,10 +1,11 @@
-import { describe, it, expect, beforeAll } from "@jest/globals";
+import { describe, it, expect, beforeAll, jest } from "@jest/globals";
 import React from 'react';
 import renderer, { act } from 'react-test-renderer';
 
 import EquityChart from './index';
 import ChartAxes from './ChartAxes';
 import ChartHistoryLine from './ChartHistoryLine';
+import ChartBranches from './ChartBranches';
 
 beforeAll(() => {
   // Disable development logs during tests
@@ -34,6 +35,72 @@ describe('EquityChart component', () => {
 
     expect(component.root.findByType(ChartAxes)).toBeTruthy();
     expect(component.root.findByType(ChartHistoryLine)).toBeTruthy();
+  });
+
+  it('renders branches and handles branch press events', () => {
+    const onBranchPress = jest.fn();
+    let component: renderer.ReactTestRenderer;
+
+    act(() => {
+      component = renderer.create(
+        <EquityChart
+          history={[100, 105, 110]}
+          initialCapital={1000}
+          risk={5}
+          reward={10}
+          onBranchPress={onBranchPress}
+        />
+      );
+    });
+
+    let branches = component.root.findByType(ChartBranches);
+    let pressables = branches.findAll(
+      node => typeof node.props.onPress === 'function'
+    );
+    const profitLine = pressables.find(p => p.props.type === 'profit');
+
+    act(() => {
+      profitLine!.props.onPress();
+    });
+    expect(onBranchPress).toHaveBeenNthCalledWith(1, 'profit');
+
+    act(() => {
+      component.unmount();
+    });
+
+    act(() => {
+      component = renderer.create(
+        <EquityChart
+          history={[100, 105, 110]}
+          initialCapital={1000}
+          risk={5}
+          reward={10}
+          onBranchPress={onBranchPress}
+        />
+      );
+    });
+
+    branches = component.root.findByType(ChartBranches);
+    pressables = branches.findAll(
+      node => typeof node.props.onPress === 'function'
+    );
+    const lossLine = pressables.find(p => p.props.type === 'loss');
+
+    act(() => {
+      lossLine!.props.onPress();
+    });
+    expect(onBranchPress).toHaveBeenNthCalledWith(2, 'loss');
+
+    act(() => {
+      component.update(
+        <EquityChart
+          history={[100, 105, 110]}
+          initialCapital={1000}
+        />
+      );
+    });
+
+    expect(() => component.root.findByType(ChartBranches)).toThrow();
   });
 
   it('handles panning controls and disables buttons at bounds', () => {
