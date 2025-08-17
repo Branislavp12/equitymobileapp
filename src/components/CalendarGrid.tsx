@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { colors } from "../theme/colors";
 
-function getMonthGrid(year: number, month: number) {
+export function getMonthGrid(year: number, month: number) {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDay = new Date(year, month, 1);
   const startWeekDay = (firstDay.getDay() + 6) % 7;
