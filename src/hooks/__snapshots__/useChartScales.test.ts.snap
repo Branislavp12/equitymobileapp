@@ -1,0 +1,164 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useChartScales hook calculates scales and windowed history for given params 1`] = `
+{
+  "height": 220,
+  "margin": {
+    "bottom": 28,
+    "left": 42,
+    "right": 16,
+    "top": 24,
+  },
+  "maxPan": 3,
+  "nVisible": 3,
+  "startIndex": 1,
+  "width": 360,
+  "windowedHistory": [
+    105,
+    null,
+    95,
+  ],
+  "xScale": {
+    "domain": [
+      1,
+      3,
+    ],
+    "range": [
+      42,
+      344,
+    ],
+  },
+  "yScale": {
+    "domain": [
+      94.5,
+      105.5,
+    ],
+    "range": [
+      192,
+      24,
+    ],
+  },
+  "yticks": [
+    95,
+    96,
+    97,
+    98,
+    99,
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+  ],
+}
+`;
+
+exports[`useChartScales hook expands y domain and generates ticks for flat history 1`] = `
+{
+  "height": 220,
+  "margin": {
+    "bottom": 28,
+    "left": 42,
+    "right": 16,
+    "top": 24,
+  },
+  "maxPan": 0,
+  "nVisible": 5,
+  "startIndex": 0,
+  "width": 360,
+  "windowedHistory": [
+    100,
+    100,
+    100,
+    100,
+    100,
+  ],
+  "xScale": {
+    "domain": [
+      0,
+      4,
+    ],
+    "range": [
+      42,
+      344,
+    ],
+  },
+  "yScale": {
+    "domain": [
+      50,
+      150,
+    ],
+    "range": [
+      192,
+      24,
+    ],
+  },
+  "yticks": [
+    50,
+    60,
+    70,
+    80,
+    90,
+    100,
+    110,
+    120,
+    130,
+    140,
+    150,
+  ],
+}
+`;
+
+exports[`useChartScales hook supports custom zoom and includes initial capital in domain 1`] = `
+{
+  "height": 220,
+  "margin": {
+    "bottom": 28,
+    "left": 42,
+    "right": 16,
+    "top": 24,
+  },
+  "maxPan": 2,
+  "nVisible": 4,
+  "startIndex": 0,
+  "width": 360,
+  "windowedHistory": [
+    1,
+    2,
+    3,
+    4,
+  ],
+  "xScale": {
+    "domain": [
+      0,
+      3,
+    ],
+    "range": [
+      42,
+      344,
+    ],
+  },
+  "yScale": {
+    "domain": [
+      -0.4,
+      4.4,
+    ],
+    "range": [
+      192,
+      24,
+    ],
+  },
+  "yticks": [
+    0,
+    0.5,
+    1,
+    1.5,
+    2,
+    2.5,
+    3,
+    3.5,
+    4,
+  ],
+}
+`;
